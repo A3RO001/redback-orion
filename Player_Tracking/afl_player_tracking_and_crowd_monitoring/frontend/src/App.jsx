@@ -1,136 +1,338 @@
-import React, { useState, useCallback, memo } from 'react'
+import React, { useState, useCallback, memo } from "react";
 import {
-  Eye, EyeOff, User, Mail, Lock, Shield, ArrowRight, ArrowLeft, Users, MapPin, Trophy, Target,
-  BarChart3, TrendingUp, Calendar, Plus, Volume2, Circle, Download, Activity, Clock, Star, Search,
-  BarChart, LineChart, Upload, Video, Play, Pause, FileVideo, AlertCircle, CheckCircle
-} from 'lucide-react'
-import './App.css'
+  Eye,
+  EyeOff,
+  User,
+  Mail,
+  Lock,
+  Shield,
+  ArrowRight,
+  ArrowLeft,
+  Users,
+  MapPin,
+  Trophy,
+  Target,
+  BarChart3,
+  TrendingUp,
+  Calendar,
+  Plus,
+  Volume2,
+  Circle,
+  Download,
+  Activity,
+  Clock,
+  Star,
+  Search,
+  BarChart,
+  LineChart,
+  Upload,
+  Video,
+  Play,
+  Pause,
+  FileVideo,
+  AlertCircle,
+  CheckCircle,
+} from "lucide-react";
+import AnalyticsView from "./analytics/Analytics.jsx";
+import "./analytics/analystics.css";
+import "./App.css";
 
 // AFL Teams data with colors and emojis
 const AFL_TEAMS = [
-  { name: 'Adelaide Crows', primary: '#002E5D', secondary: '#FFD100', emoji: '🦅', mascot: 'Crow' },
-  { name: 'Brisbane Lions', primary: '#A30046', secondary: '#FFD100', emoji: '🦁', mascot: 'Lion' },
-  { name: 'Carlton Blues', primary: '#041E42', secondary: '#FFFFFF', emoji: '🔵', mascot: 'Blue' },
-  { name: 'Collingwood Magpies', primary: '#000000', secondary: '#FFFFFF', emoji: '🖤', mascot: 'Magpie' },
-  { name: 'Essendon Bombers', primary: '#CC0000', secondary: '#000000', emoji: '✈️', mascot: 'Bomber' },
-  { name: 'Fremantle Dockers', primary: '#4A90E2', secondary: '#FFFFFF', emoji: '⚓', mascot: 'Docker' },
-  { name: 'Geelong Cats', primary: '#1E3A8A', secondary: '#FFFFFF', emoji: '🐱', mascot: 'Cat' },
-  { name: 'Gold Coast Suns', primary: '#FF6B35', secondary: '#FFD100', emoji: '☀️', mascot: 'Sun' },
-  { name: 'GWS Giants', primary: '#FF6B35', secondary: '#000000', emoji: '👹', mascot: 'Giant' },
-  { name: 'Hawthorn Hawks', primary: '#8B4513', secondary: '#FFD100', emoji: '🦅', mascot: 'Hawk' },
-  { name: 'Melbourne Demons', primary: '#000080', secondary: '#FF0000', emoji: '😈', mascot: 'Demon' },
-  { name: 'North Melbourne Kangaroos', primary: '#000080', secondary: '#FFFFFF', emoji: '🦘', mascot: 'Kangaroo' },
-  { name: 'Port Adelaide Power', primary: '#000000', secondary: '#00A0DC', emoji: '⚡', mascot: 'Power' },
-  { name: 'Richmond Tigers', primary: '#FFD100', secondary: '#000000', emoji: '🐯', mascot: 'Tiger' },
-  { name: 'St Kilda Saints', primary: '#000000', secondary: '#FF0000', emoji: '⛪', mascot: 'Saint' },
-  { name: 'Sydney Swans', primary: '#FF0000', secondary: '#FFFFFF', emoji: '🦢', mascot: 'Swan' },
-  { name: 'West Coast Eagles', primary: '#002E5D', secondary: '#FFD100', emoji: '🦅', mascot: 'Eagle' },
-  { name: 'Western Bulldogs', primary: '#FF6B35', secondary: '#FFFFFF', emoji: '🐕', mascot: 'Bulldog' }
-]
+  {
+    name: "Adelaide Crows",
+    primary: "#002E5D",
+    secondary: "#FFD100",
+    emoji: "🦅",
+    mascot: "Crow",
+  },
+  {
+    name: "Brisbane Lions",
+    primary: "#A30046",
+    secondary: "#FFD100",
+    emoji: "🦁",
+    mascot: "Lion",
+  },
+  {
+    name: "Carlton Blues",
+    primary: "#041E42",
+    secondary: "#FFFFFF",
+    emoji: "🔵",
+    mascot: "Blue",
+  },
+  {
+    name: "Collingwood Magpies",
+    primary: "#000000",
+    secondary: "#FFFFFF",
+    emoji: "🖤",
+    mascot: "Magpie",
+  },
+  {
+    name: "Essendon Bombers",
+    primary: "#CC0000",
+    secondary: "#000000",
+    emoji: "✈️",
+    mascot: "Bomber",
+  },
+  {
+    name: "Fremantle Dockers",
+    primary: "#4A90E2",
+    secondary: "#FFFFFF",
+    emoji: "⚓",
+    mascot: "Docker",
+  },
+  {
+    name: "Geelong Cats",
+    primary: "#1E3A8A",
+    secondary: "#FFFFFF",
+    emoji: "🐱",
+    mascot: "Cat",
+  },
+  {
+    name: "Gold Coast Suns",
+    primary: "#FF6B35",
+    secondary: "#FFD100",
+    emoji: "☀️",
+    mascot: "Sun",
+  },
+  {
+    name: "GWS Giants",
+    primary: "#FF6B35",
+    secondary: "#000000",
+    emoji: "👹",
+    mascot: "Giant",
+  },
+  {
+    name: "Hawthorn Hawks",
+    primary: "#8B4513",
+    secondary: "#FFD100",
+    emoji: "🦅",
+    mascot: "Hawk",
+  },
+  {
+    name: "Melbourne Demons",
+    primary: "#000080",
+    secondary: "#FF0000",
+    emoji: "😈",
+    mascot: "Demon",
+  },
+  {
+    name: "North Melbourne Kangaroos",
+    primary: "#000080",
+    secondary: "#FFFFFF",
+    emoji: "🦘",
+    mascot: "Kangaroo",
+  },
+  {
+    name: "Port Adelaide Power",
+    primary: "#000000",
+    secondary: "#00A0DC",
+    emoji: "⚡",
+    mascot: "Power",
+  },
+  {
+    name: "Richmond Tigers",
+    primary: "#FFD100",
+    secondary: "#000000",
+    emoji: "🐯",
+    mascot: "Tiger",
+  },
+  {
+    name: "St Kilda Saints",
+    primary: "#000000",
+    secondary: "#FF0000",
+    emoji: "⛪",
+    mascot: "Saint",
+  },
+  {
+    name: "Sydney Swans",
+    primary: "#FF0000",
+    secondary: "#FFFFFF",
+    emoji: "🦢",
+    mascot: "Swan",
+  },
+  {
+    name: "West Coast Eagles",
+    primary: "#002E5D",
+    secondary: "#FFD100",
+    emoji: "🦅",
+    mascot: "Eagle",
+  },
+  {
+    name: "Western Bulldogs",
+    primary: "#FF6B35",
+    secondary: "#FFFFFF",
+    emoji: "🐕",
+    mascot: "Bulldog",
+  },
+];
 
 // Player Positions (not used in current UI, keeping for future)
-const PLAYER_POSITIONS = ['Forward', 'Midfielder', 'Defender', 'Ruck', 'Interchange']
+const PLAYER_POSITIONS = [
+  "Forward",
+  "Midfielder",
+  "Defender",
+  "Ruck",
+  "Interchange",
+];
 
 // Mock Dashboard Data
 const DASHBOARD_DATA = {
   productiveTime: 12.4,
   focusedTime: 8.5,
   teams: [
-    { name: 'Forward Line', utilization: 85, overUtilized: 15, underUtilized: 0 },
-    { name: 'Midfield', utilization: 92, overUtilized: 8, underUtilized: 0 },
-    { name: 'Defense', utilization: 78, overUtilized: 0, underUtilized: 22 },
-    { name: 'Ruck Division', utilization: 88, overUtilized: 12, underUtilized: 0 },
-    { name: 'Interchange', utilization: 65, overUtilized: 0, underUtilized: 35 }
+    {
+      name: "Forward Line",
+      utilization: 85,
+      overUtilized: 15,
+      underUtilized: 0,
+    },
+    { name: "Midfield", utilization: 92, overUtilized: 8, underUtilized: 0 },
+    { name: "Defense", utilization: 78, overUtilized: 0, underUtilized: 22 },
+    {
+      name: "Ruck Division",
+      utilization: 88,
+      overUtilized: 12,
+      underUtilized: 0,
+    },
+    {
+      name: "Interchange",
+      utilization: 65,
+      overUtilized: 0,
+      underUtilized: 35,
+    },
   ],
   players: [
-    { name: 'Marcus Bontempelli', team: 'Western Bulldogs', position: 'Midfielder', image: '🏉' },
-    { name: 'Dustin Martin', team: 'Richmond Tigers', position: 'Midfielder', image: '🏉' },
-    { name: 'Patrick Dangerfield', team: 'Geelong Cats', position: 'Midfielder', image: '🏉' }
-  ]
-}
+    {
+      name: "Marcus Bontempelli",
+      team: "Western Bulldogs",
+      position: "Midfielder",
+      image: "🏉",
+    },
+    {
+      name: "Dustin Martin",
+      team: "Richmond Tigers",
+      position: "Midfielder",
+      image: "🏉",
+    },
+    {
+      name: "Patrick Dangerfield",
+      team: "Geelong Cats",
+      position: "Midfielder",
+      image: "🏉",
+    },
+  ],
+};
 
 /* =========================
    HOISTED CHILD COMPONENTS
    ========================= */
 
 const Dashboard = memo(function Dashboard({
-  showReferee, showBall, showStaff, showCrowd,
-  setShowReferee, setShowBall, setShowStaff, setShowCrowd,
-  activeTab, setActiveTab,
-  setShowPlayerStats, setShowCrowdHeatmap,
-  downloadReport
+  showReferee,
+  showBall,
+  showStaff,
+  showCrowd,
+  setShowReferee,
+  setShowBall,
+  setShowStaff,
+  setShowCrowd,
+  activeTab,
+  setActiveTab,
+  setShowPlayerStats,
+  setShowCrowdHeatmap,
+  downloadReport,
+  setCurrentView,
 }) {
-  const [uploadedVideo, setUploadedVideo] = useState(null)
-  const [isAnalyzing, setIsAnalyzing] = useState(false)
-  const [analysisComplete, setAnalysisComplete] = useState(false)
-  const [analysisProgress, setAnalysisProgress] = useState(0)
-  const [analysisResults, setAnalysisResults] = useState(null)
+  const [uploadedVideo, setUploadedVideo] = useState(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisComplete, setAnalysisComplete] = useState(false);
+  const [analysisProgress, setAnalysisProgress] = useState(0);
+  const [analysisResults, setAnalysisResults] = useState(null);
 
   const handleVideoUpload = (event) => {
-    const file = event.target.files[0]
-    if (file && file.type.startsWith('video/')) {
-      setUploadedVideo(file)
-      setAnalysisComplete(false)
-      setAnalysisResults(null)
+    const file = event.target.files[0];
+    if (file && file.type.startsWith("video/")) {
+      setUploadedVideo(file);
+      setAnalysisComplete(false);
+      setAnalysisResults(null);
     }
-  }
+  };
 
   const startAnalysis = async () => {
-    if (!uploadedVideo) return
-    
-    setIsAnalyzing(true)
-    setAnalysisProgress(0)
-    
+    if (!uploadedVideo) return;
+
+    setIsAnalyzing(true);
+    setAnalysisProgress(0);
+
     // Simulate analysis progress
     const interval = setInterval(() => {
-      setAnalysisProgress(prev => {
+      setAnalysisProgress((prev) => {
         if (prev >= 100) {
-          clearInterval(interval)
-          setIsAnalyzing(false)
-          setAnalysisComplete(true)
+          clearInterval(interval);
+          setIsAnalyzing(false);
+          setAnalysisComplete(true);
           // Generate mock analysis results
           setAnalysisResults({
-            matchDuration: '2:15:30',
+            matchDuration: "2:15:30",
             totalPlayers: 36,
             goals: 12,
             assists: 8,
             possession: { teamA: 58, teamB: 42 },
             playerStats: [
-              { name: 'Player A', goals: 3, assists: 2, distance: '8.5km', speed: '12.3km/h' },
-              { name: 'Player B', goals: 2, assists: 1, distance: '7.8km', speed: '11.9km/h' },
-              { name: 'Player C', goals: 1, assists: 3, distance: '9.2km', speed: '13.1km/h' }
+              {
+                name: "Player A",
+                goals: 3,
+                assists: 2,
+                distance: "8.5km",
+                speed: "12.3km/h",
+              },
+              {
+                name: "Player B",
+                goals: 2,
+                assists: 1,
+                distance: "7.8km",
+                speed: "11.9km/h",
+              },
+              {
+                name: "Player C",
+                goals: 1,
+                assists: 3,
+                distance: "9.2km",
+                speed: "13.1km/h",
+              },
             ],
             crowdDensity: {
               peak: 1500,
               average: 1200,
               zones: [
-                { zone: 'North Stand', density: 85, capacity: 500 },
-                { zone: 'South Stand', density: 72, capacity: 500 },
-                { zone: 'East Stand', density: 68, capacity: 400 },
-                { zone: 'West Stand', density: 75, capacity: 400 }
-              ]
+                { zone: "North Stand", density: 85, capacity: 500 },
+                { zone: "South Stand", density: 72, capacity: 500 },
+                { zone: "East Stand", density: 68, capacity: 400 },
+                { zone: "West Stand", density: 75, capacity: 400 },
+              ],
             },
             keyEvents: [
-              { time: '00:15:30', event: 'Goal by Team A', player: 'Player A' },
-              { time: '00:28:45', event: 'Yellow Card', player: 'Player B' },
-              { time: '00:45:12', event: 'Goal by Team B', player: 'Player C' },
-              { time: '01:12:33', event: 'Goal by Team A', player: 'Player A' },
-              { time: '01:45:20', event: 'Red Card', player: 'Player D' }
-            ]
-          })
-          return 100
+              { time: "00:15:30", event: "Goal by Team A", player: "Player A" },
+              { time: "00:28:45", event: "Yellow Card", player: "Player B" },
+              { time: "00:45:12", event: "Goal by Team B", player: "Player C" },
+              { time: "01:12:33", event: "Goal by Team A", player: "Player A" },
+              { time: "01:45:20", event: "Red Card", player: "Player D" },
+            ],
+          });
+          return 100;
         }
-        return prev + Math.random() * 15
-      })
-    }, 500)
-  }
+        return prev + Math.random() * 15;
+      });
+    }, 500);
+  };
 
   const resetAnalysis = () => {
-    setUploadedVideo(null)
-    setAnalysisComplete(false)
-    setAnalysisResults(null)
-    setAnalysisProgress(0)
-  }
+    setUploadedVideo(null);
+    setAnalysisComplete(false);
+    setAnalysisResults(null);
+    setAnalysisProgress(0);
+  };
   return (
     <div className="dashboard-container">
       {/* Left Sidebar */}
@@ -148,7 +350,7 @@ const Dashboard = memo(function Dashboard({
           <h3>Display Controls</h3>
           <div className="control-item">
             <button
-              className={`control-btn ${showReferee ? 'active' : ''}`}
+              className={`control-btn ${showReferee ? "active" : ""}`}
               onClick={() => setShowReferee(!showReferee)}
             >
               <Volume2 size={20} />
@@ -157,7 +359,7 @@ const Dashboard = memo(function Dashboard({
           </div>
           <div className="control-item">
             <button
-              className={`control-btn ${showBall ? 'active' : ''}`}
+              className={`control-btn ${showBall ? "active" : ""}`}
               onClick={() => setShowBall(!showBall)}
             >
               <Circle size={20} />
@@ -166,7 +368,7 @@ const Dashboard = memo(function Dashboard({
           </div>
           <div className="control-item">
             <button
-              className={`control-btn ${showStaff ? 'active' : ''}`}
+              className={`control-btn ${showStaff ? "active" : ""}`}
               onClick={() => setShowStaff(!showStaff)}
             >
               <Users size={20} />
@@ -175,7 +377,7 @@ const Dashboard = memo(function Dashboard({
           </div>
           <div className="control-item">
             <button
-              className={`control-btn ${showCrowd ? 'active' : ''}`}
+              className={`control-btn ${showCrowd ? "active" : ""}`}
               onClick={() => setShowCrowd(!showCrowd)}
             >
               <Users size={20} />
@@ -192,17 +394,22 @@ const Dashboard = memo(function Dashboard({
           <div className="section-header">
             <div className="header-content">
               <h2>Match Video Analysis</h2>
-              <p>Upload your match video to get comprehensive analysis and insights</p>
+              <p>
+                Upload your match video to get comprehensive analysis and
+                insights
+              </p>
             </div>
           </div>
-          
+
           {!uploadedVideo ? (
             <div className="upload-area">
               <div className="upload-zone">
                 <Upload size={48} />
                 <h3>Upload Match Video</h3>
                 <p>Drag and drop your video file here or click to browse</p>
-                <p className="file-types">Supported formats: MP4, AVI, MOV, MKV (Max 500MB)</p>
+                <p className="file-types">
+                  Supported formats: MP4, AVI, MOV, MKV (Max 500MB)
+                </p>
                 <input
                   type="file"
                   accept="video/*"
@@ -227,13 +434,19 @@ const Dashboard = memo(function Dashboard({
                 </div>
                 <div className="video-actions">
                   {!isAnalyzing && !analysisComplete && (
-                    <button className="action-btn primary" onClick={startAnalysis}>
+                    <button
+                      className="action-btn primary"
+                      onClick={startAnalysis}
+                    >
                       <Play size={16} />
                       Start Analysis
                     </button>
                   )}
                   {!isAnalyzing && analysisComplete && (
-                    <button className="action-btn secondary" onClick={resetAnalysis}>
+                    <button
+                      className="action-btn secondary"
+                      onClick={resetAnalysis}
+                    >
                       <Upload size={16} />
                       Upload New Video
                     </button>
@@ -252,25 +465,39 @@ const Dashboard = memo(function Dashboard({
                     <span>{Math.round(analysisProgress)}%</span>
                   </div>
                   <div className="progress-bar">
-                    <div 
-                      className="progress-fill" 
+                    <div
+                      className="progress-fill"
                       style={{ width: `${analysisProgress}%` }}
                     ></div>
                   </div>
                   <div className="progress-steps">
-                    <div className={`step ${analysisProgress > 0 ? 'active' : ''}`}>
+                    <div
+                      className={`step ${analysisProgress > 0 ? "active" : ""}`}
+                    >
                       <CheckCircle size={16} />
                       <span>Processing video frames</span>
                     </div>
-                    <div className={`step ${analysisProgress > 25 ? 'active' : ''}`}>
+                    <div
+                      className={`step ${
+                        analysisProgress > 25 ? "active" : ""
+                      }`}
+                    >
                       <CheckCircle size={16} />
                       <span>Detecting players and objects</span>
                     </div>
-                    <div className={`step ${analysisProgress > 50 ? 'active' : ''}`}>
+                    <div
+                      className={`step ${
+                        analysisProgress > 50 ? "active" : ""
+                      }`}
+                    >
                       <CheckCircle size={16} />
                       <span>Tracking movements and events</span>
                     </div>
-                    <div className={`step ${analysisProgress > 75 ? 'active' : ''}`}>
+                    <div
+                      className={`step ${
+                        analysisProgress > 75 ? "active" : ""
+                      }`}
+                    >
                       <CheckCircle size={16} />
                       <span>Generating analysis report</span>
                     </div>
@@ -284,18 +511,22 @@ const Dashboard = memo(function Dashboard({
                     <h3>Analysis Complete!</h3>
                     <p>Comprehensive match analysis results</p>
                   </div>
-                  
+
                   <div className="results-grid">
                     <div className="result-card">
                       <h4>Match Overview</h4>
                       <div className="result-stats">
                         <div className="stat">
                           <span className="label">Duration:</span>
-                          <span className="value">{analysisResults.matchDuration}</span>
+                          <span className="value">
+                            {analysisResults.matchDuration}
+                          </span>
                         </div>
                         <div className="stat">
                           <span className="label">Total Players:</span>
-                          <span className="value">{analysisResults.totalPlayers}</span>
+                          <span className="value">
+                            {analysisResults.totalPlayers}
+                          </span>
                         </div>
                         <div className="stat">
                           <span className="label">Goals:</span>
@@ -303,7 +534,9 @@ const Dashboard = memo(function Dashboard({
                         </div>
                         <div className="stat">
                           <span className="label">Assists:</span>
-                          <span className="value">{analysisResults.assists}</span>
+                          <span className="value">
+                            {analysisResults.assists}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -312,17 +545,25 @@ const Dashboard = memo(function Dashboard({
                       <h4>Possession</h4>
                       <div className="possession-chart">
                         <div className="possession-bar">
-                          <div 
-                            className="team-a" 
-                            style={{ width: `${analysisResults.possession.teamA}%` }}
+                          <div
+                            className="team-a"
+                            style={{
+                              width: `${analysisResults.possession.teamA}%`,
+                            }}
                           >
-                            <span>Team A: {analysisResults.possession.teamA}%</span>
+                            <span>
+                              Team A: {analysisResults.possession.teamA}%
+                            </span>
                           </div>
-                          <div 
-                            className="team-b" 
-                            style={{ width: `${analysisResults.possession.teamB}%` }}
+                          <div
+                            className="team-b"
+                            style={{
+                              width: `${analysisResults.possession.teamB}%`,
+                            }}
                           >
-                            <span>Team B: {analysisResults.possession.teamB}%</span>
+                            <span>
+                              Team B: {analysisResults.possession.teamB}%
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -350,26 +591,34 @@ const Dashboard = memo(function Dashboard({
                       <div className="crowd-stats">
                         <div className="crowd-metric">
                           <span className="label">Peak Attendance:</span>
-                          <span className="value">{analysisResults.crowdDensity.peak.toLocaleString()}</span>
+                          <span className="value">
+                            {analysisResults.crowdDensity.peak.toLocaleString()}
+                          </span>
                         </div>
                         <div className="crowd-metric">
                           <span className="label">Average Attendance:</span>
-                          <span className="value">{analysisResults.crowdDensity.average.toLocaleString()}</span>
+                          <span className="value">
+                            {analysisResults.crowdDensity.average.toLocaleString()}
+                          </span>
                         </div>
                       </div>
                       <div className="zone-list">
-                        {analysisResults.crowdDensity.zones.map((zone, index) => (
-                          <div key={index} className="zone-item">
-                            <span className="zone-name">{zone.zone}</span>
-                            <div className="zone-bar">
-                              <div 
-                                className="zone-fill" 
-                                style={{ width: `${zone.density}%` }}
-                              ></div>
+                        {analysisResults.crowdDensity.zones.map(
+                          (zone, index) => (
+                            <div key={index} className="zone-item">
+                              <span className="zone-name">{zone.zone}</span>
+                              <div className="zone-bar">
+                                <div
+                                  className="zone-fill"
+                                  style={{ width: `${zone.density}%` }}
+                                ></div>
+                              </div>
+                              <span className="zone-density">
+                                {zone.density}%
+                              </span>
                             </div>
-                            <span className="zone-density">{zone.density}%</span>
-                          </div>
-                        ))}
+                          )
+                        )}
                       </div>
                     </div>
                   </div>
@@ -415,32 +664,41 @@ const Dashboard = memo(function Dashboard({
           </div>
           <div className="match-tabs">
             <button
-              className={`tab-btn ${activeTab === 'player-tracking' ? 'active' : ''}`}
-              onClick={() => setActiveTab('player-tracking')}
+              className={`tab-btn ${
+                activeTab === "player-tracking" ? "active" : ""
+              }`}
+              onClick={() => setActiveTab("player-tracking")}
             >
               Player Tracking
             </button>
             <button
-              className={`tab-btn ${activeTab === 'crowd-heatmap' ? 'active' : ''}`}
+              className={`tab-btn ${
+                activeTab === "crowd-heatmap" ? "active" : ""
+              }`}
               onClick={() => setShowCrowdHeatmap(true)}
             >
               Crowd Heatmap
             </button>
             <button
-              className={`tab-btn ${activeTab === 'analytics' ? 'active' : ''}`}
-              onClick={() => setActiveTab('analytics')}
+              className={`tab-btn ${activeTab === "analytics" ? "active" : ""}`}
+              onClick={() => setCurrentView("analytics")}
             >
               Analytics
             </button>
           </div>
         </div>
 
+        {/* ---- Tabbed Content Switch ---- */}
+
         {/* Player Performance Metrics */}
         <div className="metrics-section">
           <div className="section-header">
             <h3>Player Performance Metrics</h3>
             <p>Real-time tracking of key player stats.</p>
-            <button className="action-btn" onClick={() => setShowPlayerStats(true)}>
+            <button
+              className="action-btn"
+              onClick={() => setShowPlayerStats(true)}
+            >
               <Eye size={16} />
               View Detailed Stats
             </button>
@@ -502,11 +760,11 @@ const Dashboard = memo(function Dashboard({
               <h4>Player Activity</h4>
               <div className="chart-container">
                 <div className="bar-chart">
-                  <div className="bar" style={{ height: '60%' }}></div>
-                  <div className="bar" style={{ height: '80%' }}></div>
-                  <div className="bar" style={{ height: '40%' }}></div>
-                  <div className="bar" style={{ height: '90%' }}></div>
-                  <div className="bar" style={{ height: '70%' }}></div>
+                  <div className="bar" style={{ height: "60%" }}></div>
+                  <div className="bar" style={{ height: "80%" }}></div>
+                  <div className="bar" style={{ height: "40%" }}></div>
+                  <div className="bar" style={{ height: "90%" }}></div>
+                  <div className="bar" style={{ height: "70%" }}></div>
                 </div>
                 <div className="chart-labels">
                   <span>Actions</span>
@@ -586,8 +844,8 @@ const Dashboard = memo(function Dashboard({
         </div>
       </div>
     </div>
-  )
-})
+  );
+});
 
 const PlayerStatsView = memo(function PlayerStatsView({ setShowPlayerStats }) {
   return (
@@ -607,10 +865,18 @@ const PlayerStatsView = memo(function PlayerStatsView({ setShowPlayerStats }) {
         </div>
         <div className="header-right">
           <nav className="header-nav">
-            <a href="#" className="nav-link">Home</a>
-            <a href="#" className="nav-link">Matches</a>
-            <a href="#" className="nav-link">Players</a>
-            <a href="#" className="nav-link">Stats</a>
+            <a href="#" className="nav-link">
+              Home
+            </a>
+            <a href="#" className="nav-link">
+              Matches
+            </a>
+            <a href="#" className="nav-link">
+              Players
+            </a>
+            <a href="#" className="nav-link">
+              Stats
+            </a>
           </nav>
           <div className="search-bar">
             <Search size={16} />
@@ -679,12 +945,12 @@ const PlayerStatsView = memo(function PlayerStatsView({ setShowPlayerStats }) {
             <div className="chart">
               <div className="chart-y-axis">Speed (km/h)</div>
               <div className="bar-chart">
-                <div className="bar" style={{ height: '60%' }}></div>
-                <div className="bar" style={{ height: '80%' }}></div>
-                <div className="bar" style={{ height: '40%' }}></div>
-                <div className="bar" style={{ height: '90%' }}></div>
-                <div className="bar" style={{ height: '70%' }}></div>
-                <div className="bar" style={{ height: '50%' }}></div>
+                <div className="bar" style={{ height: "60%" }}></div>
+                <div className="bar" style={{ height: "80%" }}></div>
+                <div className="bar" style={{ height: "40%" }}></div>
+                <div className="bar" style={{ height: "90%" }}></div>
+                <div className="bar" style={{ height: "70%" }}></div>
+                <div className="bar" style={{ height: "50%" }}></div>
               </div>
               <div className="chart-x-axis">Player</div>
             </div>
@@ -763,29 +1029,31 @@ const PlayerStatsView = memo(function PlayerStatsView({ setShowPlayerStats }) {
         <a href="#">Terms of Service</a>
       </div>
     </div>
-  )
-})
+  );
+});
 
-const CrowdHeatmapView = memo(function CrowdHeatmapView({ setShowCrowdHeatmap }) {
-  const [activeFilter, setActiveFilter] = useState('current-density')
+const CrowdHeatmapView = memo(function CrowdHeatmapView({
+  setShowCrowdHeatmap,
+}) {
+  const [activeFilter, setActiveFilter] = useState("current-density");
   const [crowdData] = useState({
     totalDensity: 1200,
     densityChange: 200,
-    trend: 'Increased',
-    trendDirection: 'Upward',
+    trend: "Increased",
+    trendDirection: "Upward",
     zoneData: [
-      { zone: 'Zone A', density: 65, color: '#e5e7eb' },
-      { zone: 'Zone B', density: 25, color: '#9ca3af' },
-      { zone: 'Zone C', density: 10, color: '#374151' }
+      { zone: "Zone A", density: 65, color: "#e5e7eb" },
+      { zone: "Zone B", density: 25, color: "#9ca3af" },
+      { zone: "Zone C", density: 10, color: "#374151" },
     ],
     timeSeriesData: [
-      { time: '10:00', density: 800 },
-      { time: '10:15', density: 950 },
-      { time: '10:30', density: 1100 },
-      { time: '10:45', density: 1050 },
-      { time: '11:00', density: 1200 }
-    ]
-  })
+      { time: "10:00", density: 800 },
+      { time: "10:15", density: 950 },
+      { time: "10:30", density: 1100 },
+      { time: "10:45", density: 1050 },
+      { time: "11:00", density: 1200 },
+    ],
+  });
 
   return (
     <div className="crowd-heatmap-container">
@@ -804,10 +1072,18 @@ const CrowdHeatmapView = memo(function CrowdHeatmapView({ setShowCrowdHeatmap })
         </div>
         <div className="header-right">
           <nav className="header-nav">
-            <a href="#" className="nav-link">Home</a>
-            <a href="#" className="nav-link">Match Details</a>
-            <a href="#" className="nav-link">Player Tracking</a>
-            <a href="#" className="nav-link">Analytics</a>
+            <a href="#" className="nav-link">
+              Home
+            </a>
+            <a href="#" className="nav-link">
+              Match Details
+            </a>
+            <a href="#" className="nav-link">
+              Player Tracking
+            </a>
+            <a href="#" className="nav-link">
+              Analytics
+            </a>
           </nav>
           <div className="search-bar">
             <Search size={16} />
@@ -825,20 +1101,26 @@ const CrowdHeatmapView = memo(function CrowdHeatmapView({ setShowCrowdHeatmap })
           </div>
           <div className="filter-buttons">
             <button
-              className={`filter-btn ${activeFilter === 'current-density' ? 'active' : ''}`}
-              onClick={() => setActiveFilter('current-density')}
+              className={`filter-btn ${
+                activeFilter === "current-density" ? "active" : ""
+              }`}
+              onClick={() => setActiveFilter("current-density")}
             >
               Current Density
             </button>
             <button
-              className={`filter-btn ${activeFilter === 'historical-data' ? 'active' : ''}`}
-              onClick={() => setActiveFilter('historical-data')}
+              className={`filter-btn ${
+                activeFilter === "historical-data" ? "active" : ""
+              }`}
+              onClick={() => setActiveFilter("historical-data")}
             >
               Historical Data
             </button>
             <button
-              className={`filter-btn ${activeFilter === 'analysis' ? 'active' : ''}`}
-              onClick={() => setActiveFilter('analysis')}
+              className={`filter-btn ${
+                activeFilter === "analysis" ? "active" : ""
+              }`}
+              onClick={() => setActiveFilter("analysis")}
             >
               Analysis
             </button>
@@ -855,7 +1137,9 @@ const CrowdHeatmapView = memo(function CrowdHeatmapView({ setShowCrowdHeatmap })
             <div className="section-header">
               <div className="header-content">
                 <h3>Total Crowd Density</h3>
-                <p>Current density metrics for the crowd in designated zones.</p>
+                <p>
+                  Current density metrics for the crowd in designated zones.
+                </p>
               </div>
               <button className="action-btn">
                 <Eye size={16} />
@@ -867,8 +1151,12 @@ const CrowdHeatmapView = memo(function CrowdHeatmapView({ setShowCrowdHeatmap })
                 <div className="metric-icon">👥</div>
                 <div className="metric-content">
                   <h4>Total Density</h4>
-                  <div className="metric-value">{crowdData.totalDensity.toLocaleString()} people</div>
-                  <div className="metric-change positive">+{crowdData.densityChange}</div>
+                  <div className="metric-value">
+                    {crowdData.totalDensity.toLocaleString()} people
+                  </div>
+                  <div className="metric-change positive">
+                    +{crowdData.densityChange}
+                  </div>
                 </div>
               </div>
               <div className="metric-card">
@@ -876,7 +1164,9 @@ const CrowdHeatmapView = memo(function CrowdHeatmapView({ setShowCrowdHeatmap })
                 <div className="metric-content">
                   <h4>Density Trend</h4>
                   <div className="metric-value">{crowdData.trend}</div>
-                  <div className="metric-change">{crowdData.trendDirection}</div>
+                  <div className="metric-change">
+                    {crowdData.trendDirection}
+                  </div>
                 </div>
               </div>
             </div>
@@ -891,45 +1181,83 @@ const CrowdHeatmapView = memo(function CrowdHeatmapView({ setShowCrowdHeatmap })
             </div>
             <div className="trend-chart">
               <div className="chart-y-axis">Density</div>
-                             <div className="line-chart-container">
-                 <svg className="line-chart" viewBox="0 0 400 200" preserveAspectRatio="none">
-                   <defs>
-                     <linearGradient id="lineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                       <stop offset="0%" stopColor="#4285f4" stopOpacity="0.8"/>
-                       <stop offset="100%" stopColor="#4285f4" stopOpacity="0.1"/>
-                     </linearGradient>
-                   </defs>
-                   {/* Grid lines for better readability */}
-                   <line x1="0" y1="50" x2="400" y2="50" stroke="#e0e0e0" strokeWidth="1" opacity="0.5"/>
-                   <line x1="0" y1="100" x2="400" y2="100" stroke="#e0e0e0" strokeWidth="1" opacity="0.5"/>
-                   <line x1="0" y1="150" x2="400" y2="150" stroke="#e0e0e0" strokeWidth="1" opacity="0.5"/>
-                   
-                   {/* Main trend line */}
-                   <path
-                     d="M 20,160 L 100,130 L 180,110 L 260,120 L 340,90"
-                     stroke="#4285f4"
-                     strokeWidth="3"
-                     fill="none"
-                     className="trend-line"
-                     strokeLinecap="round"
-                     strokeLinejoin="round"
-                   />
-                   
-                   {/* Gradient fill area */}
-                   <path
-                     d="M 20,160 L 100,130 L 180,110 L 260,120 L 340,90 L 340,180 L 20,180 Z"
-                     fill="url(#lineGradient)"
-                     className="trend-fill"
-                   />
-                   
-                   {/* Data points */}
-                   <circle cx="20" cy="160" r="4" fill="#4285f4"/>
-                   <circle cx="100" cy="130" r="4" fill="#4285f4"/>
-                   <circle cx="180" cy="110" r="4" fill="#4285f4"/>
-                   <circle cx="260" cy="120" r="4" fill="#4285f4"/>
-                   <circle cx="340" cy="90" r="4" fill="#4285f4"/>
-                 </svg>
-               </div>
+              <div className="line-chart-container">
+                <svg
+                  className="line-chart"
+                  viewBox="0 0 400 200"
+                  preserveAspectRatio="none"
+                >
+                  <defs>
+                    <linearGradient
+                      id="lineGradient"
+                      x1="0%"
+                      y1="0%"
+                      x2="0%"
+                      y2="100%"
+                    >
+                      <stop offset="0%" stopColor="#4285f4" stopOpacity="0.8" />
+                      <stop
+                        offset="100%"
+                        stopColor="#4285f4"
+                        stopOpacity="0.1"
+                      />
+                    </linearGradient>
+                  </defs>
+                  {/* Grid lines for better readability */}
+                  <line
+                    x1="0"
+                    y1="50"
+                    x2="400"
+                    y2="50"
+                    stroke="#e0e0e0"
+                    strokeWidth="1"
+                    opacity="0.5"
+                  />
+                  <line
+                    x1="0"
+                    y1="100"
+                    x2="400"
+                    y2="100"
+                    stroke="#e0e0e0"
+                    strokeWidth="1"
+                    opacity="0.5"
+                  />
+                  <line
+                    x1="0"
+                    y1="150"
+                    x2="400"
+                    y2="150"
+                    stroke="#e0e0e0"
+                    strokeWidth="1"
+                    opacity="0.5"
+                  />
+
+                  {/* Main trend line */}
+                  <path
+                    d="M 20,160 L 100,130 L 180,110 L 260,120 L 340,90"
+                    stroke="#4285f4"
+                    strokeWidth="3"
+                    fill="none"
+                    className="trend-line"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+
+                  {/* Gradient fill area */}
+                  <path
+                    d="M 20,160 L 100,130 L 180,110 L 260,120 L 340,90 L 340,180 L 20,180 Z"
+                    fill="url(#lineGradient)"
+                    className="trend-fill"
+                  />
+
+                  {/* Data points */}
+                  <circle cx="20" cy="160" r="4" fill="#4285f4" />
+                  <circle cx="100" cy="130" r="4" fill="#4285f4" />
+                  <circle cx="180" cy="110" r="4" fill="#4285f4" />
+                  <circle cx="260" cy="120" r="4" fill="#4285f4" />
+                  <circle cx="340" cy="90" r="4" fill="#4285f4" />
+                </svg>
+              </div>
               <div className="chart-x-axis">Time</div>
             </div>
           </div>
@@ -953,17 +1281,37 @@ const CrowdHeatmapView = memo(function CrowdHeatmapView({ setShowCrowdHeatmap })
               <h4>Density Heatmap</h4>
               <div className="pie-chart-container">
                 <div className="pie-chart">
-                  <div className="pie-segment" style={{
-                    background: `conic-gradient(${crowdData.zoneData[0].color} 0deg ${crowdData.zoneData[0].density * 3.6}deg, 
-                                               ${crowdData.zoneData[1].color} ${crowdData.zoneData[0].density * 3.6}deg ${(crowdData.zoneData[0].density + crowdData.zoneData[1].density) * 3.6}deg,
-                                               ${crowdData.zoneData[2].color} ${(crowdData.zoneData[0].density + crowdData.zoneData[1].density) * 3.6}deg 360deg)`
-                  }}></div>
+                  <div
+                    className="pie-segment"
+                    style={{
+                      background: `conic-gradient(${
+                        crowdData.zoneData[0].color
+                      } 0deg ${crowdData.zoneData[0].density * 3.6}deg, 
+                                               ${crowdData.zoneData[1].color} ${
+                        crowdData.zoneData[0].density * 3.6
+                      }deg ${
+                        (crowdData.zoneData[0].density +
+                          crowdData.zoneData[1].density) *
+                        3.6
+                      }deg,
+                                               ${crowdData.zoneData[2].color} ${
+                        (crowdData.zoneData[0].density +
+                          crowdData.zoneData[1].density) *
+                        3.6
+                      }deg 360deg)`,
+                    }}
+                  ></div>
                 </div>
                 <div className="pie-legend">
                   {crowdData.zoneData.map((zone, index) => (
                     <div key={index} className="legend-item">
-                      <div className="legend-color" style={{ backgroundColor: zone.color }}></div>
-                      <span>{zone.zone}: {zone.density}%</span>
+                      <div
+                        className="legend-color"
+                        style={{ backgroundColor: zone.color }}
+                      ></div>
+                      <span>
+                        {zone.zone}: {zone.density}%
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -982,7 +1330,9 @@ const CrowdHeatmapView = memo(function CrowdHeatmapView({ setShowCrowdHeatmap })
             <div className="camera-view-container">
               <div className="camera-placeholder">
                 <MapPin size={24} />
-                <p>Static camera zone view with real-time crowd density heatmap.</p>
+                <p>
+                  Static camera zone view with real-time crowd density heatmap.
+                </p>
               </div>
             </div>
           </div>
@@ -997,17 +1347,48 @@ const CrowdHeatmapView = memo(function CrowdHeatmapView({ setShowCrowdHeatmap })
         <a href="#">Terms of Service</a>
       </div>
     </div>
-  )
-})
+  );
+});
+
+const AnalyticsScreen = memo(function AnalyticsScreen({ backToDashboard }) {
+  return (
+    <div className="analytics-screen">
+      {/* Header (reuse the look from CrowdHeatmap/PlayerStats screens) */}
+      <div className="player-stats-header">
+        <div className="header-left">
+          <button className="back-btn" onClick={backToDashboard}>
+            <ArrowLeft size={20} />
+            Back to Dashboard
+          </button>
+          <div className="header-icon">📊</div>
+          <h1>Analytics</h1>
+        </div>
+      </div>
+
+      {/* Your analytics page content */}
+      <div className="analytics-view-container" style={{ paddingTop: 16 }}>
+        <AnalyticsView />
+      </div>
+    </div>
+  );
+});
 
 const Authentication = memo(function Authentication({
   AFL_TEAMS,
-  isLogin, isLoading, formData,
-  selectedTeam, showTeamSelector,
-  handleInputChange, handleSubmit, toggleForm,
-  setShowTeamSelector, selectTeam,
-  showPassword, setShowPassword,
-  showConfirmPassword, setShowConfirmPassword
+  isLogin,
+  isLoading,
+  formData,
+  selectedTeam,
+  showTeamSelector,
+  handleInputChange,
+  handleSubmit,
+  toggleForm,
+  setShowTeamSelector,
+  selectTeam,
+  showPassword,
+  setShowPassword,
+  showConfirmPassword,
+  setShowConfirmPassword,
 }) {
   return (
     <div className="app-container">
@@ -1099,7 +1480,9 @@ const Authentication = memo(function Authentication({
                       className="select-btn"
                       onClick={() => setShowTeamSelector(!showTeamSelector)}
                     >
-                      {selectedTeam ? `${selectedTeam.emoji} ${selectedTeam.name}` : 'Select your team'}
+                      {selectedTeam
+                        ? `${selectedTeam.emoji} ${selectedTeam.name}`
+                        : "Select your team"}
                     </button>
 
                     {showTeamSelector && (
@@ -1157,7 +1540,9 @@ const Authentication = memo(function Authentication({
                     <button
                       type="button"
                       className="password-toggle"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
                     >
                       {showConfirmPassword ? <EyeOff /> : <Eye />}
                     </button>
@@ -1175,8 +1560,8 @@ const Authentication = memo(function Authentication({
                 <div className="checkbox-group">
                   <label className="checkbox">
                     <input type="checkbox" required />
-                    <span className="checkmark"></span>
-                    I agree to the <a href="#">Terms & Privacy</a>
+                    <span className="checkmark"></span>I agree to the{" "}
+                    <a href="#">Terms & Privacy</a>
                   </label>
                 </div>
               )}
@@ -1184,8 +1569,10 @@ const Authentication = memo(function Authentication({
               <button type="submit" className="submit-btn" disabled={isLoading}>
                 {isLoading ? (
                   <div className="loading-spinner"></div>
+                ) : isLogin ? (
+                  "Login"
                 ) : (
-                  isLogin ? 'Login' : 'Sign Up'
+                  "Sign Up"
                 )}
               </button>
             </form>
@@ -1193,9 +1580,11 @@ const Authentication = memo(function Authentication({
             {/* Form Toggle */}
             <div className="form-toggle">
               <p>
-                {isLogin ? "Don't have an account?" : "Already have an account?"}
+                {isLogin
+                  ? "Don't have an account?"
+                  : "Already have an account?"}
                 <button onClick={toggleForm} className="toggle-link">
-                  {isLogin ? 'Sign up' : 'Sign in'}
+                  {isLogin ? "Sign up" : "Sign in"}
                 </button>
               </p>
             </div>
@@ -1213,7 +1602,9 @@ const Authentication = memo(function Authentication({
         <div className="dashboard-preview">
           <div className="preview-header">
             <h2>The simplest way to track your AFL players</h2>
-            <p>Advanced analytics and real-time monitoring for professional teams</p>
+            <p>
+              Advanced analytics and real-time monitoring for professional teams
+            </p>
           </div>
 
           <div className="dashboard-card">
@@ -1222,7 +1613,7 @@ const Authentication = memo(function Authentication({
               <div className="dashboard-controls">
                 <select className="team-select">
                   <option>All Teams</option>
-                  {AFL_TEAMS.map(team => (
+                  {AFL_TEAMS.map((team) => (
                     <option key={team.name}>{team.name}</option>
                   ))}
                 </select>
@@ -1239,7 +1630,9 @@ const Authentication = memo(function Authentication({
                   <h4>Player Performance</h4>
                   <TrendingUp size={20} />
                 </div>
-                <div className="metric-value">{DASHBOARD_DATA.productiveTime} hr</div>
+                <div className="metric-value">
+                  {DASHBOARD_DATA.productiveTime} hr
+                </div>
                 <div className="metric-change positive">+12.5%</div>
                 <div className="metric-chart">
                   <div className="chart-line"></div>
@@ -1251,7 +1644,9 @@ const Authentication = memo(function Authentication({
                   <h4>Match Time</h4>
                   <BarChart3 size={20} />
                 </div>
-                <div className="metric-value">{DASHBOARD_DATA.focusedTime} hr</div>
+                <div className="metric-value">
+                  {DASHBOARD_DATA.focusedTime} hr
+                </div>
                 <div className="metric-change positive">+8.2%</div>
                 <div className="metric-chart">
                   <div className="chart-line"></div>
@@ -1266,9 +1661,18 @@ const Authentication = memo(function Authentication({
                   <div key={`team-${team.name}`} className="utilization-row">
                     <div className="team-name">{team.name}</div>
                     <div className="utilization-bars">
-                      <div className="bar overall" style={{ width: `${team.utilization}%` }}></div>
-                      <div className="bar over" style={{ width: `${team.overUtilized}%` }}></div>
-                      <div className="bar under" style={{ width: `${team.underUtilized}%` }}></div>
+                      <div
+                        className="bar overall"
+                        style={{ width: `${team.utilization}%` }}
+                      ></div>
+                      <div
+                        className="bar over"
+                        style={{ width: `${team.overUtilized}%` }}
+                      ></div>
+                      <div
+                        className="bar under"
+                        style={{ width: `${team.underUtilized}%` }}
+                      ></div>
                     </div>
                     <div className="utilization-stats">
                       <span className="overall">{team.utilization}%</span>
@@ -1296,7 +1700,9 @@ const Authentication = memo(function Authentication({
                     <div className="player-avatar">{player.image}</div>
                     <div className="player-info">
                       <div className="player-name">{player.name}</div>
-                      <div className="player-details">{player.team} • {player.position}</div>
+                      <div className="player-details">
+                        {player.team} • {player.position}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -1316,8 +1722,8 @@ const Authentication = memo(function Authentication({
         </div>
       </div>
     </div>
-  )
-})
+  );
+});
 
 /* ===========
    APP (OWNER)
@@ -1325,109 +1731,128 @@ const Authentication = memo(function Authentication({
 
 function App() {
   // Views
-  const [currentView, setCurrentView] = useState('login')
-  const [showPlayerStats, setShowPlayerStats] = useState(false)
-  const [showCrowdHeatmap, setShowCrowdHeatmap] = useState(false)
+  const [currentView, setCurrentView] = useState("login");
+  const [showPlayerStats, setShowPlayerStats] = useState(false);
+  const [showCrowdHeatmap, setShowCrowdHeatmap] = useState(false);
 
   // Auth states
-  const [isLogin, setIsLogin] = useState(true)
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [selectedTeam, setSelectedTeam] = useState(null)
-  const [showTeamSelector, setShowTeamSelector] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLogin, setIsLogin] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [selectedTeam, setSelectedTeam] = useState(null);
+  const [showTeamSelector, setShowTeamSelector] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    confirmPassword: '',
-    name: '',
-    team: '',
-    position: '',
-    favoriteGround: ''
-  })
+    email: "",
+    password: "",
+    confirmPassword: "",
+    name: "",
+    team: "",
+    position: "",
+    favoriteGround: "",
+  });
 
   // Dashboard display states
-  const [showReferee, setShowReferee] = useState(true)
-  const [showBall, setShowBall] = useState(true)
-  const [showStaff, setShowStaff] = useState(false)
-  const [showCrowd, setShowCrowd] = useState(true)
-  const [activeTab, setActiveTab] = useState('player-tracking')
+  const [showReferee, setShowReferee] = useState(true);
+  const [showBall, setShowBall] = useState(true);
+  const [showStaff, setShowStaff] = useState(false);
+  const [showCrowd, setShowCrowd] = useState(true);
+  const [activeTab, setActiveTab] = useState("player-tracking");
 
   // Handlers (memoized)
   const handleInputChange = useCallback((e) => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
-  }, [])
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  }, []);
 
-  const handleSubmit = useCallback(async (e) => {
-    e.preventDefault()
-    setIsLoading(true)
-    await new Promise(resolve => setTimeout(resolve, 2000)) // simulate auth
-    console.log('Form submitted:', formData)
-    setIsLoading(false)
-    setCurrentView('dashboard')
-  }, [formData])
+  const handleSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
+      setIsLoading(true);
+      await new Promise((resolve) => setTimeout(resolve, 2000)); // simulate auth
+      console.log("Form submitted:", formData);
+      setIsLoading(false);
+      setCurrentView("dashboard");
+    },
+    [formData]
+  );
 
   const toggleForm = useCallback(() => {
-    setIsLogin(prev => !prev)
+    setIsLogin((prev) => !prev);
     setFormData({
-      email: '',
-      password: '',
-      confirmPassword: '',
-      name: '',
-      team: '',
-      position: '',
-      favoriteGround: ''
-    })
-    setSelectedTeam(null)
-  }, [])
+      email: "",
+      password: "",
+      confirmPassword: "",
+      name: "",
+      team: "",
+      position: "",
+      favoriteGround: "",
+    });
+    setSelectedTeam(null);
+  }, []);
 
   const selectTeam = useCallback((team) => {
-    setSelectedTeam(team)
-    setFormData(prev => ({ ...prev, team: team.name }))
-    setShowTeamSelector(false)
-  }, [])
+    setSelectedTeam(team);
+    setFormData((prev) => ({ ...prev, team: team.name }));
+    setShowTeamSelector(false);
+  }, []);
 
   // Download Report Function
   const downloadReport = useCallback(() => {
     const reportData = {
-      matchInfo: { teams: "Team A vs Team B", score: "2-1", time: "12:34", quarter: "3" },
+      matchInfo: {
+        teams: "Team A vs Team B",
+        score: "2-1",
+        time: "12:34",
+        quarter: "3",
+      },
       analytics: {
         possessionOverTime: [
           { time: "0-5min", teamA: 65, teamB: 35 },
           { time: "5-10min", teamA: 58, teamB: 42 },
           { time: "10-15min", teamA: 72, teamB: 28 },
           { time: "15-20min", teamA: 45, teamB: 55 },
-          { time: "20-25min", teamA: 68, teamB: 32 }
+          { time: "20-25min", teamA: 68, teamB: 32 },
         ],
         playerActivity: [
           { player: "Player A", actions: 85, position: "Midfield" },
           { player: "Player B", actions: 92, position: "Forward" },
           { player: "Player C", actions: 78, position: "Defender" },
           { player: "Player D", actions: 88, position: "Midfield" },
-          { player: "Player E", actions: 76, position: "Forward" }
-        ]
+          { player: "Player E", actions: 76, position: "Forward" },
+        ],
       },
-      performanceMetrics: { goals: 2, assists: 1, shotsOnTarget: 5, possession: 62, passes: 245, tackles: 18 },
+      performanceMetrics: {
+        goals: 2,
+        assists: 1,
+        shotsOnTarget: 5,
+        possession: 62,
+        passes: 245,
+        tackles: 18,
+      },
       timestamp: new Date().toISOString(),
-      generatedBy: "AFL Tracker Analytics"
-    }
+      generatedBy: "AFL Tracker Analytics",
+    };
 
-    const jsonString = JSON.stringify(reportData, null, 2)
-    const blob = new Blob([jsonString], { type: 'application/json' })
-    const url = window.URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `match-progression-analytics-${new Date().toISOString().split('T')[0]}.json`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(url)
-  }, [])
+    const jsonString = JSON.stringify(reportData, null, 2);
+    const blob = new Blob([jsonString], { type: "application/json" });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `match-progression-analytics-${
+      new Date().toISOString().split("T")[0]
+    }.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  }, []);
 
   return (
     <div className="app">
-      {currentView === 'dashboard' ? (
+      {currentView === "analytics" ? ( // FIX: new branch
+        <AnalyticsScreen backToDashboard={() => setCurrentView("dashboard")} />
+      ) : currentView === "dashboard" ? (
         showPlayerStats ? (
           <PlayerStatsView setShowPlayerStats={setShowPlayerStats} />
         ) : showCrowdHeatmap ? (
@@ -1447,6 +1872,7 @@ function App() {
             setShowPlayerStats={setShowPlayerStats}
             setShowCrowdHeatmap={setShowCrowdHeatmap}
             downloadReport={downloadReport}
+            setCurrentView={setCurrentView}
           />
         )
       ) : (
@@ -1469,7 +1895,7 @@ function App() {
         />
       )}
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

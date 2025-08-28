@@ -1,0 +1,107 @@
+/* Page */
+.analytics-page {
+  padding: 20px 24px 36px;
+  background: #f7f7fb;
+  min-height: calc(100vh - 120px);
+  box-sizing: border-box;
+}
+.analytics-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 16px;
+  color: #111827;
+}
+
+/* Row 1: two cards side by side */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, auto);  /* instead of 1fr 1fr */
+  gap: 18px;
+  margin-bottom: 18px;
+  justify-content: center;  /* FIX: center the whole grid */
+}
+.card-wrap { width: 100%; }
+
+/* Row 2: stat boxes */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* FIX: 4 equal columns so "Disposals" stays on same row */
+  gap: 18px;
+  margin-bottom: 18px;
+}
+.statbox {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px 18px;
+  box-shadow: 0 6px 16px rgba(0,0,0,.08);
+  text-align: center;
+}
+.statbox-label { font-size: 13px; color: #6b7280; margin-bottom: 8px; }
+.statbox-value { font-size: 28px; font-weight: 800; color: #0b1324; margin-bottom: 6px; }
+.statbox-delta { font-size: 13px; color: #6b7280; }      /* neutral/zero */
+.statbox-delta.positive { color: #16a34a; }              /* FIX: positive green */
+.statbox-delta.negative { color: #dc2626; }              /* FIX: negative red */
+
+/* FIX: delta badge—clear contrast and higher specificity than generic text */
+.delta-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 6px;
+  padding: 2px 8px;
+  font-size: 13px;
+  font-weight: 700;            /* bolder to pop */
+  border: 1px solid;           /* subtle outline for legibility */
+  border-radius: 9999px;       /* pill shape */
+  line-height: 1.2;
+}
+
+/* Optional: ensure no inherited color dulls it */
+.statbox .delta-badge { color: inherit; }
+
+
+/* Row 3: two charts side by side */
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+.chart-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0,0,0,.08);
+  padding: 12px 14px 10px;
+  overflow: hidden; /* prevents canvas overflow */
+}
+.chart-title {
+  font-weight: 600;
+  color: #111827;
+  padding: 4px 2px 10px;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 10px;
+}
+.chart-wrap { position: relative; width: 100%; }
+.chart-wrap.h-320 { height: 320px; }
+.chart-wrap.h-360 { height: 360px; }
+
+/* Buttons within bar chart */
+.bar-root .metric-switch { display: flex; gap: 8px; margin-bottom: 10px; }
+.bar-root .chip {
+  border: 1px solid #111827;
+  border-radius: 9999px;
+  padding: 6px 10px;
+  background: #fff;
+  font-size: 12px;
+}
+.bar-root .chip.active { background: #111827; color: #fff; }
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .cards-grid { grid-template-columns: 1fr; }
+  .charts-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 720px) {
+  .stat-row { grid-template-columns: 1fr; }
+}
